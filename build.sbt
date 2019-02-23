@@ -9,8 +9,10 @@ lazy val `reactive-streams-telemetry` =
     .settings(settings)
     .settings(
       libraryDependencies ++= Seq(
-        library.scalaCheck % Test,
-        library.scalaTest  % Test,
+        library.akkaStream,
+        library.dropWizardMetricsCore,
+        library.openTracingApi,
+        library.utest % Test
       )
     )
 
@@ -21,11 +23,15 @@ lazy val `reactive-streams-telemetry` =
 lazy val library =
   new {
     object Version {
-      val scalaCheck = "1.14.0"
-      val scalaTest  = "3.0.5"
+      val akka              = "2.5.21"
+      val dropWizardMetrics = "4.0.5"
+      val openTracing       = "0.31.0"
+      val utest             = "0.6.6"
     }
-    val scalaCheck = "org.scalacheck" %% "scalacheck" % Version.scalaCheck
-    val scalaTest  = "org.scalatest"  %% "scalatest"  % Version.scalaTest
+    val akkaStream                        = "com.typesafe.akka"             %% "akka-stream"                            % Version.akka
+    val dropWizardMetricsCore             = "io.dropwizard.metrics"         %  "metrics-core"                           % Version.dropWizardMetrics
+    val openTracingApi                    = "io.opentracing"                %  "opentracing-api"                        % Version.openTracing
+    val utest                             = "com.lihaoyi"                   %% "utest"                                  % Version.utest
   }
 
 // *****************************************************************************
@@ -39,8 +45,8 @@ lazy val settings =
 lazy val commonSettings =
   Seq(
     scalaVersion := "2.12.8",
-    organization := "default",
-    organizationName := "huntc",
+    organization := "au.com.titanclass",
+    organizationName := "Titan Class Pty Ltd",
     startYear := Some(2019),
     licenses += ("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0")),
     scalacOptions ++= Seq(
@@ -54,6 +60,8 @@ lazy val commonSettings =
     ),
     Compile / unmanagedSourceDirectories := Seq((Compile / scalaSource).value),
     Test / unmanagedSourceDirectories := Seq((Test / scalaSource).value),
+    testFrameworks += new TestFramework("utest.runner.Framework"),
+    wartremoverWarnings in (Compile, compile) ++= Warts.unsafe,
 )
 
 lazy val scalafmtSettings =
