@@ -15,7 +15,7 @@
  */
 
 package au.com.titanclass.streams.telemetry
-import au.com.titanclass.streams.telemetry.impl.StreamsScopeManager
+import au.com.titanclass.streams.telemetry.impl.{ StreamsScopeManager, StreamsSpanBuilder }
 import io.opentracing.{ ScopeManager, Span, SpanContext, Tracer }
 import io.opentracing.propagation.Format
 
@@ -33,7 +33,9 @@ class TracerStream extends Tracer {
   override def activeSpan(): Span =
     scopeManager().active().span()
 
-  override def buildSpan(operationName: String): Tracer.SpanBuilder                     = ???
+  override def buildSpan(operationName: String): Tracer.SpanBuilder =
+    new StreamsSpanBuilder(currentScopeManager)
+
   override def inject[C](spanContext: SpanContext, format: Format[C], carrier: C): Unit = ???
   override def extract[C](format: Format[C], carrier: C): SpanContext                   = ???
 }
