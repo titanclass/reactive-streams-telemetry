@@ -11,7 +11,7 @@ lazy val `reactive-streams-telemetry` =
       libraryDependencies ++= Seq(
         library.akkaStream,
         library.dropWizardMetricsCore,
-        library.openTracingApi,
+        library.jaegerCore,
         library.utest % Test
       )
     )
@@ -25,12 +25,12 @@ lazy val library =
     object Version {
       val akka              = "2.5.21"
       val dropWizardMetrics = "4.0.5"
-      val openTracing       = "0.31.0"
+      val jaeger            = "0.27.0"
       val utest             = "0.6.6"
     }
     val akkaStream                        = "com.typesafe.akka"             %% "akka-stream"                            % Version.akka
     val dropWizardMetricsCore             = "io.dropwizard.metrics"         %  "metrics-core"                           % Version.dropWizardMetrics
-    val openTracingApi                    = "io.opentracing"                %  "opentracing-api"                        % Version.openTracing
+    val jaegerCore                        = "io.jaegertracing"              %  "jaeger-core"                            % Version.jaeger
     val utest                             = "com.lihaoyi"                   %% "utest"                                  % Version.utest
   }
 

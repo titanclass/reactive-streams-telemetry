@@ -27,10 +27,10 @@ import com.codahale.metrics._
   * Provides a source of Dropwizard Metrics snapshots emitted once per the rate and duration.
   */
 @SuppressWarnings(Array("org.wartremover.warts.Null"))
-class ReporterStream(registry: MetricRegistry,
-                     rateUnit: TimeUnit,
-                     durationUnit: TimeUnit,
-                     executor: Option[ScheduledExecutorService])(implicit mat: Materializer)
+class MetricsReporter(registry: MetricRegistry,
+                      rateUnit: TimeUnit,
+                      durationUnit: TimeUnit,
+                      executor: Option[ScheduledExecutorService])(implicit mat: Materializer)
     extends ScheduledReporter(registry,
                               "streams-reporter",
                               MetricFilter.ALL,

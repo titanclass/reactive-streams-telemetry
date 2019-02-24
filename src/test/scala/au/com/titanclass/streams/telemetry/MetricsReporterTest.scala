@@ -27,10 +27,10 @@ import utest._
 
 import scala.concurrent.ExecutionContext
 
-object ReporterStreamTest extends TestSuite {
+object MetricsReporterTest extends TestSuite {
 
   implicit lazy val system: ActorSystem =
-    ActorSystem("iox-reporter-tests")
+    ActorSystem("metrics-reporter-tests")
 
   override def utestAfterAll(): Unit =
     system.terminate()
@@ -45,7 +45,7 @@ object ReporterStreamTest extends TestSuite {
     'test - {
       val metricRegistry = new MetricRegistry()
 
-      val reporter = new ReporterStream(
+      val reporter = new MetricsReporter(
         metricRegistry,
         TimeUnit.SECONDS,
         TimeUnit.SECONDS,
