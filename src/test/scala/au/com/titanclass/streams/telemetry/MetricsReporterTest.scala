@@ -47,6 +47,7 @@ object MetricsReporterTest extends TestSuite {
 
       val reporter = new MetricsReporter(
         metricRegistry,
+        MetricFilter.ALL,
         TimeUnit.SECONDS,
         TimeUnit.SECONDS,
         None

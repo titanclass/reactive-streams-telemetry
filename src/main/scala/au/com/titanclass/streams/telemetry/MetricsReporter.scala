@@ -28,12 +28,13 @@ import com.codahale.metrics._
   */
 @SuppressWarnings(Array("org.wartremover.warts.Null"))
 class MetricsReporter(registry: MetricRegistry,
+                      filter: MetricFilter,
                       rateUnit: TimeUnit,
                       durationUnit: TimeUnit,
                       executor: Option[ScheduledExecutorService])(implicit mat: Materializer)
     extends ScheduledReporter(registry,
                               "streams-reporter",
-                              MetricFilter.ALL,
+                              filter,
                               rateUnit,
                               durationUnit,
                               executor.orNull) {
