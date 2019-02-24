@@ -13,7 +13,7 @@ over UDP to your favorite collection engine.
 [Akka Streams](https://doc.akka.io/docs/akka/2.5/stream/)
 is used as the [Reactive Streams](http://www.reactive-streams.org/) interface and implementation 
 with reporting for [Drop Wizard Metrics](https://metrics.dropwizard.io/4.0.0/) and
-[Open Tracing](https://opentracing.io/). 
+[Open Tracing](https://opentracing.io/) via [Jaeger Tracing](https://www.jaegertracing.io/). 
 
 ## Contribution policy ##
 
