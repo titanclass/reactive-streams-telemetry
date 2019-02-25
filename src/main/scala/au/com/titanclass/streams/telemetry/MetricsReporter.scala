@@ -23,6 +23,14 @@ import akka.stream.{ Materializer, OverflowStrategy }
 import akka.stream.scaladsl.{ BroadcastHub, Keep, Source }
 import com.codahale.metrics._
 
+object MetricsReporter {
+  type MetricsSnapshot = (util.SortedMap[String, Gauge[_]],
+                          util.SortedMap[String, Counter],
+                          util.SortedMap[String, Histogram],
+                          util.SortedMap[String, Meter],
+                          util.SortedMap[String, Timer])
+}
+
 /**
   * Provides a source of Dropwizard Metrics snapshots emitted once per the rate and duration.
   */
@@ -39,11 +47,7 @@ class MetricsReporter(registry: MetricRegistry,
                               durationUnit,
                               executor.orNull) {
 
-  type MetricsSnapshot = (util.SortedMap[String, Gauge[_]],
-                          util.SortedMap[String, Counter],
-                          util.SortedMap[String, Histogram],
-                          util.SortedMap[String, Meter],
-                          util.SortedMap[String, Timer])
+  import MetricsReporter._
 
   private val (snapshotQueue, snapshotSource) = Source
     .queue[MetricsSnapshot](1, OverflowStrategy.dropHead)

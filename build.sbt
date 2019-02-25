@@ -12,6 +12,7 @@ lazy val `reactive-streams-telemetry` =
         library.akkaStream,
         library.dropWizardMetricsCore,
         library.jaegerCore,
+        library.sprayJson,
         library.utest % Test
       )
     )
@@ -26,11 +27,13 @@ lazy val library =
       val akka              = "2.5.21"
       val dropWizardMetrics = "4.0.5"
       val jaeger            = "0.27.0"
+      val sprayJson         = "1.3.5"
       val utest             = "0.6.6"
     }
     val akkaStream                        = "com.typesafe.akka"             %% "akka-stream"                            % Version.akka
     val dropWizardMetricsCore             = "io.dropwizard.metrics"         %  "metrics-core"                           % Version.dropWizardMetrics
     val jaegerCore                        = "io.jaegertracing"              %  "jaeger-core"                            % Version.jaeger
+    val sprayJson                         = "io.spray"                      %% "spray-json"                             % Version.sprayJson
     val utest                             = "com.lihaoyi"                   %% "utest"                                  % Version.utest
   }
 
