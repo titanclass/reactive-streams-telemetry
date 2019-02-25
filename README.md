@@ -2,18 +2,55 @@
 
 Welcome to reactive-streams-telemetry!
 
-The goal of this library is to provide an Reactive Streams interface to 
-an application instance's working set of metrics and traces. Metrics and
-traces are presented using streams where elements pertain to their
-primitives. Applications can then consume these streams and present them 
-however they wish e.g. Akka HTTP can be used to serve a snapshot of metrics and traces as JSON
-with a route using HTTP `GET`. Another example could be where metrics and traces are published
-over UDP to your favorite collection engine.
- 
+The goal of this [Scala](https://www.scala-lang.org/) library is to provide an [Reactive Streams](http://www.reactive-streams.org/) interface to 
+an application instance's working set of metrics and traces, thereby providing control over resource usage. 
+
+Metrics and traces are presented using streams where elements pertain to a [metric](https://metrics.dropwizard.io/3.1.0/manual/core/)
+and [span](https://opentracing.io/docs/overview/spans/) respectively. 
+Applications can then consume these streams and present them 
+however they wish e.g. [Akka HTTP](https://doc.akka.io/docs/akka-http/current/) can be used to serve a snapshot of metrics and traces as JSON
+with an HTTP `GET` route. Another example could be where metrics and traces are published
+over UDP to your favorite collection engine. 
+
 [Akka Streams](https://doc.akka.io/docs/akka/2.5/stream/)
-is used as the [Reactive Streams](http://www.reactive-streams.org/) interface and implementation 
+is used as the Reactive Streams interface and implementation 
 with reporting for [Drop Wizard Metrics](https://metrics.dropwizard.io/4.0.0/) and
 [Open Tracing](https://opentracing.io/) via [Jaeger Tracing](https://www.jaegertracing.io/). 
+We also provide a JSON encoding as a convenience and use [spray-json](https://github.com/spray/spray-json) 
+for this purpose.
+
+Other than the libraries declared above, there are no additional dependencies.
+
+## Metrics setup
+
+```scala
+import com.codahale.metrics._
+import au.com.titanclass.streams.telemetry._
+import java.util.concurrent.TimeUnit
+
+val metricRegistry = new MetricRegistry()
+
+val reporter = new MetricsReporter(
+  metricRegistry,
+  MetricFilter.ALL,
+  TimeUnit.HOURS,
+  TimeUnit.MILLISECONDS,
+  None
+)
+```
+
+## Tracing setup
+
+```scala
+import io.jaegertracing.Tracer
+import au.com.titanclass.streams.telemetry._
+
+val reporter = new TracingReporter(1)
+
+val tracer = new Tracer.Builder("my-tracing-service")
+  .withReporter(reporter)
+  .build()
+```
 
 ## Contribution policy ##
 
