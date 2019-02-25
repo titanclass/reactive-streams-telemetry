@@ -52,6 +52,37 @@ val tracer = new Tracer.Builder("my-tracing-service")
   .build()
 ```
 
+## JSON serialization
+
+To use the JSON serialization you import `MetricsJsonProtocol` or `TracingJsonProtocol` for metrics
+and tracing respectively. Here's an example of how to serialize `Span` objects to JSON:
+
+```scala
+import au.com.titanclass.streams.telemetry.{TracingJsonProtocol, TracingReporter}
+import io.jaegertracing.Tracer
+import io.jaegertracing.samplers.ConstSampler
+import akka.stream.scaladsl.Sink
+
+val reporter = new TracingReporter(1)
+
+val sampler = new ConstSampler(true)
+
+val tracer = new Tracer.Builder("tracing-reporter-tests")
+  .withReporter(reporter)
+  .withSampler(sampler)
+  .build()
+
+val scope = tracer.buildSpan("some-span").startActive(true)
+scope.span().log(0, "hello-world")
+scope.close()
+
+import TracingJsonProtocol._
+
+reporter.source
+  .runWith(Sink.head)
+  .map (_.toJson)
+```
+
 ## Contribution policy ##
 
 Contributions via GitHub pull requests are gladly accepted from their original author. Along with

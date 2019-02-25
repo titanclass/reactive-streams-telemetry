@@ -18,8 +18,9 @@ package au.com.titanclass.streams.telemetry
 import akka.NotUsed
 import akka.stream.{ KillSwitches, Materializer, OverflowStrategy }
 import akka.stream.scaladsl.{ BroadcastHub, Keep, Source }
-import io.jaegertracing.Span
 import io.jaegertracing.reporters.Reporter
+import io.jaegertracing.{ Span => JaegerSpan }
+import io.opentracing.Span
 
 /**
   * Provides a source of Jaeger traces.
@@ -32,7 +33,7 @@ class TracingReporter(bufferSize: Int)(implicit mat: Materializer) extends Repor
     .toMat(BroadcastHub.sink(1))(Keep.both)
     .run()
 
-  override def report(span: Span): Unit = {
+  override def report(span: JaegerSpan): Unit = {
     val _ = tracerQueue.offer(span)
   }
 
