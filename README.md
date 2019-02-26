@@ -21,6 +21,26 @@ for this purpose.
 
 Other than the libraries declared above, there are no additional dependencies.
 
+## Teaser
+
+Serve up telemetry given an [Alpakka Unix Domain Socket](https://doc.akka.io/docs/alpakka/current/unix-domain-socket.html) 
+given the establishment of the metrics and tracer sources (described after):
+
+```scala
+val flow = Flow[ByteString]
+  .dropWhile(_ => true) // Don't care about input to the UDS here
+  .merge(metrics.map { snapshot =>
+    import MetricsJsonProtocol._
+    JsObject("metrics" -> snapshot.toJson).compactPrint
+  })
+  .merge(traces.map { span =>
+    import TracingJsonProtocol._
+    JsObject("traces" -> span.toJson).compactPrint
+  })
+  .collect { case s: String => ByteString(s) }
+UnixDomainSocket().bindAndHandle(flow, new File("/var/run/mysocket.sock"))
+```
+
 ## Metrics setup
 
 ```scala
