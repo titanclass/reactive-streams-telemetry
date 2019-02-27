@@ -42,14 +42,14 @@ lazy val library =
 // *****************************************************************************
 
 lazy val settings =
-  commonSettings ++
-  scalafmtSettings
+  commonSettings ++ scalafmtSettings
 
 lazy val commonSettings =
   Seq(
     scalaVersion := "2.12.8",
     organization := "au.com.titanclass",
     organizationName := "Titan Class Pty Ltd",
+    organizationHomepage := "https://www.titanclass.com.au",
     startYear := Some(2019),
     licenses += ("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0")),
     scalacOptions ++= Seq(
@@ -64,8 +64,24 @@ lazy val commonSettings =
     Compile / unmanagedSourceDirectories := Seq((Compile / scalaSource).value),
     Test / unmanagedSourceDirectories := Seq((Test / scalaSource).value),
     testFrameworks += new TestFramework("utest.runner.Framework"),
+    useGpg := true,
     wartremoverWarnings in (Compile, compile) ++= Warts.unsafe,
-)
+
+    // Maven Central publishing
+    scmInfo := Some(
+      ScmInfo(
+        url("https://github.com/your-account/your-project"),
+        "scm:git@github.com:your-account/your-project.git"
+      )
+    ),
+    pomIncludeRepository := { _ => false },
+    publishTo := {
+      val nexus = "https://oss.sonatype.org/"
+      if (isSnapshot.value) Some("snapshots" at nexus + "content/repositories/snapshots")
+      else Some("releases" at nexus + "service/local/staging/deploy/maven2")
+    },
+    publishMavenStyle := true
+  )
 
 lazy val scalafmtSettings =
   Seq(
