@@ -1,5 +1,7 @@
 # reactive-streams-telemetry #
 
+[![CircleCI](https://circleci.com/gh/titanclass/reactive-streams-telemetry.svg?style=svg)](https://circleci.com/gh/titanclass/reactive-streams-telemetry)
+
 Welcome to reactive-streams-telemetry!
 
 The goal of this [Scala](https://www.scala-lang.org/) library is to provide an [Reactive Streams](http://www.reactive-streams.org/) interface to 
