@@ -41,6 +41,14 @@ val flow = Flow[ByteString]
 UnixDomainSocket().bindAndHandle(flow, new File("/var/run/mysocket.sock"))
 ```
 
+## Download
+
+Builds are published to Maven Central. Please substitute `version` accordingly.
+
+```
+"au.com.titanclass" %% "reactive-streams-telemetry" % version
+```
+
 ## Metrics setup
 
 ```scala

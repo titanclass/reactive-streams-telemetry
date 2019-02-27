@@ -1,0 +1,25 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/project
+    docker:
+      - image: circleci/openjdk:8
+    steps:
+      - checkout
+      - restore_cache:
+          key: sbt-cache-1
+      - run:
+          name: Compile & Test
+          command: |
+            sbt clean compile test:compile test
+      - save_cache:
+          key: sbt-cache-1
+          paths:
+            - "~/.ivy2/cache"
+            - "~/.sbt"
+            - "~/.m2"
+workflows:
+  version: 2
+  build:
+    jobs:
+      - build
