@@ -54,6 +54,51 @@ UnixDomainSocket()
                  new File("/var/run/mysocket.sock"))
 ```
 
+Then, using [`nc`](https://linux.die.net/man/1/nc) and [`jq`](https://stedolan.github.io/jq/manual/), 
+you can connect to your app and stream out prettified JSON:
+
+```bash
+$ nc -v -U /var/run/mysocket.sock | jq
+{
+  "metricsSnapshot": {
+    "counters": {
+      "lora-server.messages-appended": 0,
+      "lora-server.downlink-packets-rx": 14,
+      "lora-server.unsupported-payload": 0,
+      "lora-server.uplink-packets-tx": 7
+    },
+    "gauges": {},
+    "histograms": {},
+    "meters": {
+      "lora-server.valid-data-up": {
+        "fifteenMinuteRate": 0,
+        "count": 0,
+        "fiveMinuteRate": 0,
+        "oneMinuteRate": 0,
+        "meanRate": 0
+      }
+    },
+    "timers": {}
+  }
+}
+{
+  "span": {
+    "baggage": [],
+    "duration": 1667,
+    "logs": [],
+    "operationName": "uplink-rx-to-ack",
+    "references": [],
+    "spanId": -5323514506617469000,
+    "start": 1551332653982000,
+    "tags": {
+      "sampler.type": "const",
+      "sampler.param": "true"
+    },
+    "traceId": -5323514506617469000
+  }
+}
+```
+
 ## Download
 
 Builds are published to Maven Central. Please substitute `version` accordingly.
