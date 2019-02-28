@@ -30,7 +30,7 @@ Other than the libraries declared above, there are no additional dependencies.
 
 ## Teaser
 
-Serve up telemetry given an [Alpakka Unix Domain Socket](https://doc.akka.io/docs/alpakka/current/unix-domain-socket.html) 
+Serve up the latest telemetry gathered given an [Alpakka Unix Domain Socket](https://doc.akka.io/docs/alpakka/current/unix-domain-socket.html) 
 and the establishment of the `metrics` and `traces` sources (described following this):
 
 ```scala
@@ -40,12 +40,15 @@ val source =
       import MetricsJsonProtocol._
       JsObject("metricsSnapshot" -> snapshot.toJson).compactPrint
     }
-    .merge(traces.map { span =>
-      import TracingJsonProtocol._
-      JsObject("span" -> span.toJson).compactPrint
-    })
-    .collect { case s: String => ByteString(s) }
-    
+    .merge(
+      traces
+        .map { span =>
+          import TracingJsonProtocol._
+          JsObject("span" -> span.toJson).compactPrint
+        }
+    )
+    .map(s => ByteString(s + "\n")) // Having a newline delim helps consumers such as 'jq' to parse it
+
 UnixDomainSocket()
   .bindAndHandle(Flow.fromSinkAndSourceCoupled(Sink.ignore, source),
                  new File("/var/run/mysocket.sock"))
