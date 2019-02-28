@@ -52,6 +52,7 @@ lazy val commonSettings =
     organizationHomepage := Some(url("https://www.titanclass.com.au")),
     startYear := Some(2019),
     licenses += ("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0")),
+    homepage := Some(url("https://github.com/titanclass/reactive-streams-telemetry")),
     scmInfo := Some(
       ScmInfo(
         url("https://github.com/titanclass/reactive-streams-telemetry"),
