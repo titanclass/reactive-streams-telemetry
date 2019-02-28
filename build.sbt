@@ -58,6 +58,14 @@ lazy val commonSettings =
         "scm:git@github.com:titanclass/reactive-streams-telemetry.git"
       )
     ),
+    developers := List(
+      Developer(
+        id    = "huntc",
+        name  = "Christopher Hunt",
+        email = "huntchr@gmail.com",
+        url   = url("http://christopherhunt-software.blogspot.com/")
+      )
+    ),
     scalacOptions ++= Seq(
       "-unchecked",
       "-deprecation",
