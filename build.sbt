@@ -67,6 +67,7 @@ lazy val commonSettings =
     wartremoverWarnings in (Compile, compile) ++= Warts.unsafe,
 
     // Maven Central publishing
+    credentials += Credentials(Path.userHome / ".sbt" / "sonatype_credential"),
     scmInfo := Some(
       ScmInfo(
         url("https://github.com/your-account/your-project"),
