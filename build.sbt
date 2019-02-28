@@ -64,7 +64,6 @@ lazy val commonSettings =
     Compile / unmanagedSourceDirectories := Seq((Compile / scalaSource).value),
     Test / unmanagedSourceDirectories := Seq((Test / scalaSource).value),
     testFrameworks += new TestFramework("utest.runner.Framework"),
-    useGpg := true,
     wartremoverWarnings in (Compile, compile) ++= Warts.unsafe,
 
     // Maven Central publishing
