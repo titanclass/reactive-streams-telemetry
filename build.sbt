@@ -52,6 +52,12 @@ lazy val commonSettings =
     organizationHomepage := Some(url("https://www.titanclass.com.au")),
     startYear := Some(2019),
     licenses += ("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0")),
+    scmInfo := Some(
+      ScmInfo(
+        url("https://github.com/titanclass/reactive-streams-telemetry"),
+        "scm:git@github.com:titanclass/reactive-streams-telemetry.git"
+      )
+    ),
     scalacOptions ++= Seq(
       "-unchecked",
       "-deprecation",
@@ -68,12 +74,6 @@ lazy val commonSettings =
 
     // Maven Central publishing
     credentials += Credentials(Path.userHome / ".sbt" / "sonatype_credential"),
-    scmInfo := Some(
-      ScmInfo(
-        url("https://github.com/your-account/your-project"),
-        "scm:git@github.com:your-account/your-project.git"
-      )
-    ),
     pomIncludeRepository := { _ => false },
     publishTo := {
       val nexus = "https://oss.sonatype.org/"
