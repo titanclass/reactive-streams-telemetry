@@ -34,18 +34,21 @@ Serve up telemetry given an [Alpakka Unix Domain Socket](https://doc.akka.io/doc
 and the establishment of the `metrics` and `traces` sources (described following this):
 
 ```scala
-val flow = Flow[ByteString]
-  .dropWhile(_ => true) // Don't care about input to the socket here
-  .merge(metrics.map { snapshot =>
-    import MetricsJsonProtocol._
-    JsObject("metrics" -> snapshot.toJson).compactPrint
-  })
-  .merge(traces.map { span =>
-    import TracingJsonProtocol._
-    JsObject("traces" -> span.toJson).compactPrint
-  })
-  .collect { case s: String => ByteString(s) }
-UnixDomainSocket().bindAndHandle(flow, new File("/var/run/mysocket.sock"))
+val source =
+  metrics
+    .map { snapshot =>
+      import MetricsJsonProtocol._
+      JsObject("metricsSnapshot" -> snapshot.toJson).compactPrint
+    }
+    .merge(traces.map { span =>
+      import TracingJsonProtocol._
+      JsObject("span" -> span.toJson).compactPrint
+    })
+    .collect { case s: String => ByteString(s) }
+    
+UnixDomainSocket()
+  .bindAndHandle(Flow.fromSinkAndSourceCoupled(Sink.ignore, source),
+                 new File("/var/run/mysocket.sock"))
 ```
 
 ## Download
