@@ -51,21 +51,21 @@ object TracingJsonProtocol extends DefaultJsonProtocol {
                 case null =>
                   Vector.empty
                 case logs =>
-                  logs.asScala
-                    .map(
-                      x =>
-                        JsObject(
-                          "time" -> JsNumber(x.getTime),
-                          "fields" -> JsObject(
-                            x.getFields match {
-                              case null => Map.empty[String, JsValue]
-                              case f    => f.asScala.map(x => x._1 -> JsString(x._2.toString)).toMap
-                            }
-                          ),
-                          "message" -> JsString(x.getMessage)
+                  logs.asScala.map { x =>
+                    val fields = Map(
+                      "time" -> JsNumber(x.getTime),
+                      "fields" -> JsObject(
+                        x.getFields match {
+                          case null => Map.empty[String, JsValue]
+                          case f    => f.asScala.map(x => x._1 -> JsString(x._2.toString)).toMap
+                        }
                       )
-                    )
-                    .toVector
+                    ) ++ (x.getMessage match {
+                      case null => Map.empty
+                      case m    => Map("message" -> JsString(m))
+                    })
+                    JsObject(fields)
+                  }.toVector
               }
             ),
             "baggage" -> JsArray(
