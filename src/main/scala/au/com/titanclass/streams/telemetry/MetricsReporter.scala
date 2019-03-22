@@ -19,7 +19,7 @@ import java.util
 import java.util.concurrent.{ ScheduledExecutorService, TimeUnit }
 
 import akka.NotUsed
-import akka.stream.{ Materializer, OverflowStrategy }
+import akka.stream.{ Attributes, Materializer, OverflowStrategy }
 import akka.stream.scaladsl.{ BroadcastHub, Keep, Source }
 import com.codahale.metrics._
 
@@ -50,7 +50,7 @@ class MetricsReporter(registry: MetricRegistry,
   import MetricsReporter._
 
   private val (snapshotQueue, snapshotSource) = Source
-    .queue[MetricsSnapshot](1, OverflowStrategy.dropHead)
+    .queue[MetricsSnapshot](1, OverflowStrategy.dropHead.withLogLevel(Attributes.LogLevels.Off))
     .toMat(BroadcastHub.sink(1))(Keep.both)
     .run()
 
