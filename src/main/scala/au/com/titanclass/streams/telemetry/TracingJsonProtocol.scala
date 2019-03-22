@@ -61,7 +61,7 @@ object TracingJsonProtocol extends DefaultJsonProtocol {
                         }
                       )
                     ) ++ (x.getMessage match {
-                      case null => Map.empty
+                      case null => Map.empty[String, JsValue]
                       case m    => Map("message" -> JsString(m))
                     })
                     JsObject(fields)
