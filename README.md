@@ -178,6 +178,16 @@ explicitly, by submitting any copyrighted material via pull request, email, or o
 agree to license the material under the project's open source license and warrant that you have the
 legal authority to do so.
 
+## Publishing ##
+
+You'll need a GPG key to sign as artifacts are published to Sonatype for publishing at Maven Central.
+Once you have GPG setup:
+
+```
+export GPG_TTY=$(tty)
+sbt publish
+```
+
 ## License ##
 
 This code is open source software licensed under the
