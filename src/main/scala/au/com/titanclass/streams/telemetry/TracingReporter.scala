@@ -16,7 +16,7 @@
 
 package au.com.titanclass.streams.telemetry
 import akka.NotUsed
-import akka.stream.{ KillSwitches, Materializer, OverflowStrategy }
+import akka.stream.{ Attributes, KillSwitches, Materializer, OverflowStrategy }
 import akka.stream.scaladsl.{ BroadcastHub, Keep, Source }
 import io.jaegertracing.reporters.Reporter
 import io.jaegertracing.{ Span => JaegerSpan }
@@ -28,7 +28,7 @@ import io.opentracing.Span
 class TracingReporter(bufferSize: Int)(implicit mat: Materializer) extends Reporter {
 
   private val ((tracerQueue, killSwitch), tracerSource) = Source
-    .queue[Span](bufferSize, OverflowStrategy.dropHead)
+    .queue[Span](bufferSize, OverflowStrategy.dropHead.withLogLevel(Attributes.LogLevels.Off))
     .viaMat(KillSwitches.single)(Keep.both)
     .toMat(BroadcastHub.sink(1))(Keep.both)
     .run()
