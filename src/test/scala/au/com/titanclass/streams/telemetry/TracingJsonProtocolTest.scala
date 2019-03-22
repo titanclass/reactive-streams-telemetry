@@ -24,6 +24,7 @@ import io.jaegertracing.samplers.ConstSampler
 import spray.json._
 import utest._
 
+import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext
 
 object TracingJsonProtocolTest extends TestSuite {
@@ -53,7 +54,10 @@ object TracingJsonProtocolTest extends TestSuite {
         .build()
 
       val scope = tracer.buildSpan("some-span").startActive(true)
-      scope.span().log(0, "hello-world")
+      scope
+        .span()
+        .log(0, "hello-world")
+        .log(0, Map("f0" -> 0, "f1" -> 1).asJava)
       scope.close()
 
       import TracingJsonProtocol._
@@ -63,7 +67,7 @@ object TracingJsonProtocolTest extends TestSuite {
         .map { s =>
           val json = s.toJson
           val re =
-            """\{"baggage":\[\],"duration":.*,"logs":\[\{"fields":\{\},"message":"hello-world","time":0}],"operationName":"some-span","references":\[\],"spanId":.*,"start":.*,"tags":\{"sampler.type":"const","sampler.param":"true"\},"traceId":.*\}""".r
+            """\{"baggage":\[\],"duration":.*,"logs":\[\{"time":0,"fields":\{\},"message":"hello-world"\},\{"time":0,"fields":\{"f1":"1","f0":"0"\}\}\],"operationName":"some-span","references":\[\],"spanId":.*,"start":.*,"tags":\{"sampler.type":"const","sampler.param":"true"\},"traceId":.*\}""".r
           assertMatch(re.findFirstIn(json.compactPrint)) {
             case Some(_) =>
           }
