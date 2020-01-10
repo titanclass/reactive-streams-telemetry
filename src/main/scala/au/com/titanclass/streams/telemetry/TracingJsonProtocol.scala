@@ -16,7 +16,7 @@
 
 package au.com.titanclass.streams.telemetry
 
-import io.jaegertracing.{ Span => JaegerSpan, SpanContext => JaegerSpanContext }
+import io.jaegertracing.internal.{ JaegerSpan, JaegerSpanContext }
 import io.opentracing.Span
 import spray.json._
 
@@ -35,7 +35,7 @@ object TracingJsonProtocol extends DefaultJsonProtocol {
       (obj, obj.context) match {
         case (js: JaegerSpan, jsctx: JaegerSpanContext) =>
           JsObject(
-            "traceId" -> JsNumber(jsctx.getTraceId),
+            "traceId" -> JsString(jsctx.getTraceId),
             "spanId"  -> JsNumber(jsctx.getSpanId),
             "references" -> JsArray(
               js.getReferences.asScala

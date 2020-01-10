@@ -19,8 +19,8 @@ package au.com.titanclass.streams.telemetry
 import akka.actor.ActorSystem
 import akka.stream.scaladsl.Sink
 import akka.stream.{ ActorMaterializer, Materializer }
-import io.jaegertracing.{ Span => JaegerSpan, Tracer }
-import io.jaegertracing.samplers.ConstSampler
+import io.jaegertracing.internal.{ JaegerSpan, JaegerTracer => Tracer }
+import io.jaegertracing.internal.samplers.ConstSampler
 import utest._
 
 import scala.concurrent.ExecutionContext
@@ -39,7 +39,7 @@ object TracingReporterTest extends TestSuite {
   implicit lazy val ec: ExecutionContext =
     mat.executionContext
 
-  val tests = Tests {
+  val tests: Tests = Tests {
     'test - {
       val reporter = new TracingReporter(1)
 
@@ -50,7 +50,7 @@ object TracingReporterTest extends TestSuite {
         .withSampler(sampler)
         .build()
 
-      val _ = tracer.buildSpan("some-span").startActive(true).close()
+      val _ = tracer.buildSpan("some-span").start().finish()
 
       reporter.source
         .runWith(Sink.head)
