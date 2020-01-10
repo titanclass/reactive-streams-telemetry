@@ -18,8 +18,8 @@ package au.com.titanclass.streams.telemetry
 import akka.NotUsed
 import akka.stream.{ Attributes, KillSwitches, Materializer, OverflowStrategy }
 import akka.stream.scaladsl.{ BroadcastHub, Keep, Source }
-import io.jaegertracing.reporters.Reporter
-import io.jaegertracing.{ Span => JaegerSpan }
+import io.jaegertracing.spi.Reporter
+import io.jaegertracing.internal.JaegerSpan
 import io.opentracing.Span
 
 /**

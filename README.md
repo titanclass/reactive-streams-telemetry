@@ -128,7 +128,7 @@ val reporter = new MetricsReporter(
 ## Tracing setup
 
 ```scala
-import io.jaegertracing.Tracer
+import io.jaegertracing.internal.{ JaegerTracer => Tracer }
 import au.com.titanclass.streams.telemetry._
 
 val reporter = new TracingReporter(1)
@@ -145,8 +145,8 @@ and tracing respectively. Here's an example of how to serialize `Span` objects t
 
 ```scala
 import au.com.titanclass.streams.telemetry.{TracingJsonProtocol, TracingReporter}
-import io.jaegertracing.Tracer
-import io.jaegertracing.samplers.ConstSampler
+import io.jaegertracing.internal.{ JaegerTracer => Tracer }
+import io.jaegertracing.internal.samplers.ConstSampler
 import akka.stream.scaladsl.Sink
 
 val reporter = new TracingReporter(1)
@@ -158,9 +158,9 @@ val tracer = new Tracer.Builder("tracing-reporter-tests")
   .withSampler(sampler)
   .build()
 
-val scope = tracer.buildSpan("some-span").startActive(true)
-scope.span().log(0, "hello-world")
-scope.close()
+val span = tracer.buildSpan("some-span").start()
+span.log(0, "hello-world")
+span.finish()
 
 import TracingJsonProtocol._
 

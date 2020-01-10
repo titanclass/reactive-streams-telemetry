@@ -19,8 +19,8 @@ package au.com.titanclass.streams.telemetry
 import akka.actor.ActorSystem
 import akka.stream.scaladsl.Sink
 import akka.stream.{ ActorMaterializer, Materializer }
-import io.jaegertracing.Tracer
-import io.jaegertracing.samplers.ConstSampler
+import io.jaegertracing.internal.{ JaegerTracer => Tracer }
+import io.jaegertracing.internal.samplers.ConstSampler
 import spray.json._
 import utest._
 
@@ -53,12 +53,11 @@ object TracingJsonProtocolTest extends TestSuite {
         .withSampler(sampler)
         .build()
 
-      val scope = tracer.buildSpan("some-span").startActive(true)
-      scope
-        .span()
+      val span = tracer.buildSpan("some-span").start()
+      span
         .log(0, "hello-world")
         .log(0, Map("f0" -> 0, "f1" -> 1).asJava)
-      scope.close()
+      span.finish()
 
       import TracingJsonProtocol._
 
