@@ -185,7 +185,7 @@ Once you have GPG setup:
 
 ```
 export GPG_TTY=$(tty)
-sbt publish
+sbt publishSigned
 ```
 
 ## License ##
