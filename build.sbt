@@ -24,11 +24,11 @@ lazy val `reactive-streams-telemetry` =
 lazy val library =
   new {
     object Version {
-      val akka              = "2.5.27"
-      val dropWizardMetrics = "4.0.7"
-      val jaeger            = "1.1.0"
+      val akka              = "2.6.7"
+      val dropWizardMetrics = "4.1.2"
+      val jaeger            = "1.3.1"
       val sprayJson         = "1.3.5"
-      val utest             = "0.6.9"
+      val utest             = "0.7.2"
     }
     val akkaStream                        = "com.typesafe.akka"             %% "akka-stream"                            % Version.akka
     val dropWizardMetricsCore             = "io.dropwizard.metrics"         %  "metrics-core"                           % Version.dropWizardMetrics
@@ -46,7 +46,7 @@ lazy val settings =
 
 lazy val commonSettings =
   Seq(
-    scalaVersion := "2.12.8",
+    scalaVersion := "2.13.3",
     organization := "au.com.titanclass",
     organizationName := "Titan Class Pty Ltd",
     organizationHomepage := Some(url("https://www.titanclass.com.au")),
@@ -72,9 +72,7 @@ lazy val commonSettings =
       "-deprecation",
       "-language:_",
       "-target:jvm-1.8",
-      "-encoding", "UTF-8",
-      "-Ypartial-unification",
-      "-Ywarn-unused-import",
+      "-encoding", "UTF-8"
     ),
     Compile / unmanagedSourceDirectories := Seq((Compile / scalaSource).value),
     Test / unmanagedSourceDirectories := Seq((Test / scalaSource).value),

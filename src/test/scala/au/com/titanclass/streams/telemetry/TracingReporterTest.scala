@@ -18,7 +18,6 @@ package au.com.titanclass.streams.telemetry
 
 import akka.actor.ActorSystem
 import akka.stream.scaladsl.Sink
-import akka.stream.{ ActorMaterializer, Materializer }
 import io.jaegertracing.internal.{ JaegerSpan, JaegerTracer => Tracer }
 import io.jaegertracing.internal.samplers.ConstSampler
 import utest._
@@ -33,14 +32,11 @@ object TracingReporterTest extends TestSuite {
   override def utestAfterAll(): Unit =
     system.terminate()
 
-  implicit lazy val mat: Materializer =
-    ActorMaterializer()
-
   implicit lazy val ec: ExecutionContext =
-    mat.executionContext
+    system.dispatcher
 
   val tests: Tests = Tests {
-    'test - {
+    test("test") {
       val reporter = new TracingReporter(1)
 
       val sampler = new ConstSampler(true)

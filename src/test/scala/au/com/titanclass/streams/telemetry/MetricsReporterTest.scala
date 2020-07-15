@@ -21,7 +21,6 @@ import java.util.concurrent.TimeUnit
 
 import akka.actor.ActorSystem
 import akka.stream.scaladsl.Sink
-import akka.stream.{ ActorMaterializer, Materializer }
 import com.codahale.metrics._
 import utest._
 
@@ -35,14 +34,11 @@ object MetricsReporterTest extends TestSuite {
   override def utestAfterAll(): Unit =
     system.terminate()
 
-  implicit lazy val mat: Materializer =
-    ActorMaterializer()
-
   implicit lazy val ec: ExecutionContext =
-    mat.executionContext
+    system.dispatcher
 
-  val tests = Tests {
-    'test - {
+  val tests: Tests = Tests {
+    test("test") {
       val metricRegistry = new MetricRegistry()
 
       val reporter = new MetricsReporter(

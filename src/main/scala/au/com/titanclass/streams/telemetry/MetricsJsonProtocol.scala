@@ -18,7 +18,7 @@ package au.com.titanclass.streams.telemetry
 import com.codahale.metrics._
 import spray.json._
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 /**
   * JSON serialization for Dropwizard metrics.
@@ -85,14 +85,14 @@ object MetricsJsonProtocol extends DefaultJsonProtocol {
     override def write(obj: MetricsReporter.MetricsSnapshot): JsValue =
       JsObject(
         "gauges" -> JsObject(
-          obj._1.asScala
+          obj._1.asScala.view
             .mapValues(g => new BigDecimalGauge(BigDecimal(g.getValue.toString)).toJson)
             .toMap
         ),
-        "counters"   -> JsObject(obj._2.asScala.mapValues(_.toJson).toMap),
-        "histograms" -> JsObject(obj._3.asScala.mapValues(_.toJson).toMap),
-        "meters"     -> JsObject(obj._4.asScala.mapValues(_.toJson).toMap),
-        "timers"     -> JsObject(obj._5.asScala.mapValues(_.toJson).toMap)
+        "counters"   -> JsObject(obj._2.asScala.view.mapValues(_.toJson).toMap),
+        "histograms" -> JsObject(obj._3.asScala.view.mapValues(_.toJson).toMap),
+        "meters"     -> JsObject(obj._4.asScala.view.mapValues(_.toJson).toMap),
+        "timers"     -> JsObject(obj._5.asScala.view.mapValues(_.toJson).toMap)
       )
   }
 }
