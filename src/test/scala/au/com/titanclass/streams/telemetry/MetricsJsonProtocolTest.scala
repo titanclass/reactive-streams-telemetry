@@ -21,12 +21,12 @@ import spray.json._
 import utest._
 import java.util
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.collection.SortedMap
 
 object MetricsJsonProtocolTest extends TestSuite {
-  val tests = Tests {
-    'writeMetrics - {
+  val tests: Tests = Tests {
+    test("writeMetrics") {
 
       val gauge = new Gauge[Int] {
         override def getValue: Int =
@@ -56,7 +56,7 @@ object MetricsJsonProtocolTest extends TestSuite {
           .asInstanceOf[util.SortedMap[String, Timer]]
       ).toJson
 
-      json.compactPrint ==> """{"counters":{"counter1":0},"gauges":{"gauge1":0},"histograms":{"histogram1":{"count":0,"percent99":0.0,"mean":0.0,"min":0,"percent75":0.0,"max":0,"median":0.0,"percent999":0.0,"percent98":0.0,"stdDev":0.0,"percent95":0.0}},"meters":{"meter1":{"fifteenMinuteRate":0.0,"count":0,"fiveMinuteRate":0.0,"oneMinuteRate":0.0,"meanRate":0.0}},"timers":{"timer1":{"fifteenMinuteRate":0.0,"count":0,"percent99":0.0,"mean":0.0,"min":0,"percent75":0.0,"max":0,"median":0.0,"fiveMinuteRate":0.0,"percent999":0.0,"percent98":0.0,"stdDev":0.0,"oneMinuteRate":0.0,"meanRate":0.0,"percent95":0.0}}}"""
+      json ==> """{"counters":{"counter1":0},"gauges":{"gauge1":0},"histograms":{"histogram1":{"count":0,"percent99":0.0,"mean":0.0,"min":0,"percent75":0.0,"max":0,"median":0.0,"percent999":0.0,"percent98":0.0,"stdDev":0.0,"percent95":0.0}},"meters":{"meter1":{"fifteenMinuteRate":0.0,"count":0,"fiveMinuteRate":0.0,"oneMinuteRate":0.0,"meanRate":0.0}},"timers":{"timer1":{"fifteenMinuteRate":0.0,"count":0,"percent99":0.0,"mean":0.0,"min":0,"percent75":0.0,"max":0,"median":0.0,"fiveMinuteRate":0.0,"percent999":0.0,"percent98":0.0,"stdDev":0.0,"oneMinuteRate":0.0,"meanRate":0.0,"percent95":0.0}}}""".parseJson
     }
 
   }

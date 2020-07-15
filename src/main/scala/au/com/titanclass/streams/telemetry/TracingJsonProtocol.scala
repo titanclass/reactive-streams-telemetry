@@ -20,7 +20,7 @@ import io.jaegertracing.internal.{ JaegerSpan, JaegerSpanContext }
 import io.opentracing.Span
 import spray.json._
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 /**
   * JSON serialization for trace spans.
@@ -45,7 +45,7 @@ object TracingJsonProtocol extends DefaultJsonProtocol {
             "operationName" -> JsString(js.getOperationName),
             "start"         -> JsNumber(js.getStart),
             "duration"      -> JsNumber(js.getDuration),
-            "tags"          -> JsObject(js.getTags.asScala.mapValues(x => JsString(x.toString)).toMap),
+            "tags"          -> JsObject(js.getTags.asScala.view.mapValues(x => JsString(x.toString)).toMap),
             "logs" -> JsArray(
               js.getLogs match {
                 case null =>
@@ -54,17 +54,18 @@ object TracingJsonProtocol extends DefaultJsonProtocol {
                   logs.asScala.map {
                     x =>
                       val fields = Map[String, JsValue](
-                        "time" -> JsNumber(x.getTime),
-                        "fields" -> JsObject(
-                          x.getFields match {
-                            case null => Map.empty[String, JsValue]
-                            case f    => f.asScala.map(x => x._1 -> JsString(x._2.toString)).toMap
-                          }
-                        )
-                      ) ++ (x.getMessage match {
-                        case null => Map.empty[String, JsValue]
-                        case m    => Map("message" -> JsString(m))
-                      })
+                          "time" -> JsNumber(x.getTime),
+                          "fields" -> JsObject(
+                            x.getFields match {
+                              case null => Map.empty[String, JsValue]
+                              case f =>
+                                f.asScala.view.map(x => x._1 -> JsString(x._2.toString)).toMap
+                            }
+                          )
+                        ) ++ (x.getMessage match {
+                          case null => Map.empty[String, JsValue]
+                          case m    => Map("message" -> JsString(m))
+                        })
                       JsObject(fields)
                   }.toVector
               }

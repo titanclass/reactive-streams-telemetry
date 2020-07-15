@@ -18,13 +18,12 @@ package au.com.titanclass.streams.telemetry
 
 import akka.actor.ActorSystem
 import akka.stream.scaladsl.Sink
-import akka.stream.{ ActorMaterializer, Materializer }
 import io.jaegertracing.internal.{ JaegerTracer => Tracer }
 import io.jaegertracing.internal.samplers.ConstSampler
 import spray.json._
 import utest._
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.concurrent.ExecutionContext
 
 object TracingJsonProtocolTest extends TestSuite {
@@ -35,14 +34,11 @@ object TracingJsonProtocolTest extends TestSuite {
   override def utestAfterAll(): Unit =
     system.terminate()
 
-  implicit lazy val mat: Materializer =
-    ActorMaterializer()
-
   implicit lazy val ec: ExecutionContext =
-    mat.executionContext
+    system.dispatcher
 
-  val tests = Tests {
-    'writeTracing - {
+  val tests: Tests = Tests {
+    test("writeTracing") {
 
       val reporter = new TracingReporter(1)
 
@@ -66,7 +62,7 @@ object TracingJsonProtocolTest extends TestSuite {
         .map { s =>
           val json = s.toJson
           val re =
-            """\{"baggage":\[\],"duration":.*,"logs":\[\{"time":0,"fields":\{\},"message":"hello-world"\},\{"time":0,"fields":\{"f1":"1","f0":"0"\}\}\],"operationName":"some-span","references":\[\],"spanId":.*,"start":.*,"tags":\{"sampler.type":"const","sampler.param":"true"\},"traceId":.*\}""".r
+            """\{"baggage":\[],"duration":.*,"logs":\[\{"time":0,"fields":\{},"message":"hello-world"},\{"time":0,"fields":\{"f0":"0","f1":"1"}}],"operationName":"some-span","references":\[],"spanId":.*,"start":.*,"tags":\{"sampler.type":"const","sampler.param":"true"},"traceId":.*}""".r
           assertMatch(re.findFirstIn(json.compactPrint)) {
             case Some(_) =>
           }

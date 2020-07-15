@@ -24,28 +24,34 @@ import akka.stream.scaladsl.{ BroadcastHub, Keep, Source }
 import com.codahale.metrics._
 
 object MetricsReporter {
-  type MetricsSnapshot = (util.SortedMap[String, Gauge[_]],
-                          util.SortedMap[String, Counter],
-                          util.SortedMap[String, Histogram],
-                          util.SortedMap[String, Meter],
-                          util.SortedMap[String, Timer])
+  type MetricsSnapshot = (
+      util.SortedMap[String, Gauge[_]],
+      util.SortedMap[String, Counter],
+      util.SortedMap[String, Histogram],
+      util.SortedMap[String, Meter],
+      util.SortedMap[String, Timer]
+  )
 }
 
 /**
   * Provides a source of Dropwizard Metrics snapshots emitted once per the rate and duration.
   */
 @SuppressWarnings(Array("org.wartremover.warts.Null"))
-class MetricsReporter(registry: MetricRegistry,
-                      filter: MetricFilter,
-                      rateUnit: TimeUnit,
-                      durationUnit: TimeUnit,
-                      executor: Option[ScheduledExecutorService])(implicit mat: Materializer)
-    extends ScheduledReporter(registry,
-                              "streams-reporter",
-                              filter,
-                              rateUnit,
-                              durationUnit,
-                              executor.orNull) {
+class MetricsReporter(
+    registry: MetricRegistry,
+    filter: MetricFilter,
+    rateUnit: TimeUnit,
+    durationUnit: TimeUnit,
+    executor: Option[ScheduledExecutorService]
+)(implicit mat: Materializer)
+    extends ScheduledReporter(
+      registry,
+      "streams-reporter",
+      filter,
+      rateUnit,
+      durationUnit,
+      executor.orNull
+    ) {
 
   import MetricsReporter._
 
