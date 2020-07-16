@@ -10,10 +10,10 @@ lazy val `reactive-streams-telemetry` =
     .settings(
       libraryDependencies ++= Seq(
         library.akkaStream,
-        library.dropWizardMetricsCore,
-        library.jaegerCore,
-        library.sprayJson,
-        library.utest % Test
+        library.openTelemetryProto,
+        library.openTelemetrySdk,
+        library.utest % Test,
+        library.akkaStreamTestkit % Test
       )
     )
 
@@ -24,17 +24,16 @@ lazy val `reactive-streams-telemetry` =
 lazy val library =
   new {
     object Version {
-      val akka              = "2.6.7"
-      val dropWizardMetrics = "4.1.2"
-      val jaeger            = "1.3.1"
-      val sprayJson         = "1.3.5"
-      val utest             = "0.7.2"
+      val akka               = "2.6.7"
+      val openTelemetryProto = "0.3.0"
+      val openTelemetrySdk   = "0.6.0"
+      val utest              = "0.7.2"
     }
-    val akkaStream                        = "com.typesafe.akka"             %% "akka-stream"                            % Version.akka
-    val dropWizardMetricsCore             = "io.dropwizard.metrics"         %  "metrics-core"                           % Version.dropWizardMetrics
-    val jaegerCore                        = "io.jaegertracing"              %  "jaeger-core"                            % Version.jaeger
-    val sprayJson                         = "io.spray"                      %% "spray-json"                             % Version.sprayJson
-    val utest                             = "com.lihaoyi"                   %% "utest"                                  % Version.utest
+    val akkaStream         = "com.typesafe.akka" %% "akka-stream"         % Version.akka
+    val akkaStreamTestkit  = "com.typesafe.akka" %% "akka-stream-testkit" % Version.akka
+    val openTelemetryProto = "io.opentelemetry"  %  "opentelemetry-proto" % Version.openTelemetryProto
+    val openTelemetrySdk   = "io.opentelemetry"  %  "opentelemetry-sdk"   % Version.openTelemetrySdk
+    val utest              = "com.lihaoyi"       %% "utest"               % Version.utest
   }
 
 // *****************************************************************************
