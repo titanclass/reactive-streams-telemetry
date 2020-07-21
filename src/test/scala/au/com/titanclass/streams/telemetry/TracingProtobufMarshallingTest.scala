@@ -16,11 +16,30 @@
 
 package au.com.titanclass.streams.telemetry
 
+import io.opentelemetry.sdk.trace.data.SpanData
+import io.opentelemetry.sdk.trace.data.test.TestSpanData
+import io.opentelemetry.trace.{ Span, SpanId, Status, TraceId }
 import utest._
 
 object TracingProtobufMarshallingTest extends TestSuite {
 
   val tests: Tests = Tests {
-    test("write traces") {}
+    test("write traces") {
+      val spanData: SpanData = TestSpanData
+        .newBuilder()
+        .setTraceId(new TraceId(0, 0))
+        .setSpanId(new SpanId(0))
+        .setName("name")
+        .setKind(Span.Kind.INTERNAL)
+        .setStartEpochNanos(0)
+        .setStatus(Status.ABORTED)
+        .setEndEpochNanos(0)
+        .setHasEnded(true)
+        .build()
+
+      import SpanProtobufMarshalling._
+      val span = spanData.toProtobuf.build()
+      span.getName ==> "name"
+    }
   }
 }
