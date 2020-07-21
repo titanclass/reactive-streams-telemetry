@@ -23,6 +23,31 @@ is used as the Reactive Streams interface and implementation.
 
 Other than the libraries declared above, there are no additional dependencies.
 
+## Teaser
+
+Serve up the latest telemetry gathered given an [Alpakka Unix Domain Socket](https://doc.akka.io/docs/alpakka/current/unix-domain-socket.html) 
+and the establishment of the `metrics` and `traces` sources from their respective exporters:
+
+```scala
+val source =
+  metrics
+    .map { metricData =>
+      import MetricProtobufMarshalling._
+      ByteString(metricData.toProtobuf.build().toByteArray)
+    }
+    .merge(
+      traces
+        .map { spanData =>
+          import SpanProtobufMarshalling._
+          ByteString(spanData.toProtobuf.build().toByteArray)
+        }
+    )
+
+UnixDomainSocket()
+  .bindAndHandle(Flow.fromSinkAndSourceCoupled(Sink.ignore, source),
+                 new File("/var/run/mysocket.sock"))
+```
+
 ## Download
 
 Builds are published to Maven Central. Please substitute `version` accordingly.
