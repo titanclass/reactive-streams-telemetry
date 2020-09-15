@@ -21,8 +21,13 @@ import akka.NotUsed
 import akka.actor.ActorSystem
 import akka.stream.{ Attributes, OverflowStrategy }
 import akka.stream.scaladsl.{ BroadcastHub, Keep, Source }
+import io.opentelemetry.sdk.common.CompletableResultCode
 import io.opentelemetry.sdk.metrics.`export`.MetricExporter
 import io.opentelemetry.sdk.metrics.data.MetricData
+
+import scala.concurrent.Future
+import scala.jdk.CollectionConverters._
+import scala.util.{ Failure, Success }
 
 object StreamMetricExporter {
   def apply(bufferSize: Int)(implicit system: ActorSystem): StreamMetricExporter =
@@ -45,15 +50,18 @@ class StreamMetricExporter(bufferSize: Int)(implicit system: ActorSystem) extend
   def source: Source[MetricData, NotUsed] =
     metricSource
 
-  override def `export`(metrics: util.Collection[MetricData]): MetricExporter.ResultCode = {
-    metrics.forEach { metric =>
-      val _ = metricQueue.offer(metric)
+  override def `export`(metrics: util.Collection[MetricData]): CompletableResultCode = {
+    val resultCode = new CompletableResultCode()
+    import system.dispatcher
+    Future.sequence(metrics.asScala.map(x => metricQueue.offer(x)).toList).onComplete {
+      case Success(_) => resultCode.succeed()
+      case Failure(_) => resultCode.fail()
     }
-    MetricExporter.ResultCode.SUCCESS
+    resultCode
   }
 
-  override def flush(): MetricExporter.ResultCode =
-    MetricExporter.ResultCode.SUCCESS
+  override def flush(): CompletableResultCode =
+    CompletableResultCode.ofSuccess()
 
   override def shutdown(): Unit =
     metricQueue.complete()

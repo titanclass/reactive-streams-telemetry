@@ -24,10 +24,10 @@ lazy val `reactive-streams-telemetry` =
 lazy val library =
   new {
     object Version {
-      val akka               = "2.6.7"
+      val akka               = "2.6.9"
       val openTelemetryProto = "0.3.0"
-      val openTelemetrySdk   = "0.6.0"
-      val utest              = "0.7.2"
+      val openTelemetrySdk   = "0.8.0"
+      val utest              = "0.7.5"
     }
     val akkaStream         = "com.typesafe.akka" %% "akka-stream"         % Version.akka
     val akkaStreamTestkit  = "com.typesafe.akka" %% "akka-stream-testkit" % Version.akka

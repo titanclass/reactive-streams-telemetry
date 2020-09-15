@@ -16,11 +16,15 @@
 
 package au.com.titanclass.streams.telemetry
 
+import java.util
+
 import akka.actor.ActorSystem
 import akka.stream.testkit.scaladsl.TestSink
+import io.opentelemetry.common.{ Attributes, ReadableAttributes }
+import io.opentelemetry.sdk.common.InstrumentationLibraryInfo
+import io.opentelemetry.sdk.resources.Resource
 import io.opentelemetry.sdk.trace.data.SpanData
-import io.opentelemetry.sdk.trace.data.test.TestSpanData
-import io.opentelemetry.trace.{ Span, SpanId, Status, TraceId }
+import io.opentelemetry.trace.{ Span, SpanId, Status, TraceFlags, TraceId, TraceState }
 import utest._
 
 import scala.concurrent.ExecutionContext
@@ -39,17 +43,68 @@ object StreamSpanExporterTest extends TestSuite {
 
   val tests: Tests = Tests {
     test("consume and shutdown") {
-      val spanData: SpanData = TestSpanData
-        .newBuilder()
-        .setTraceId(new TraceId(0, 0))
-        .setSpanId(new SpanId(0))
-        .setName("name")
-        .setKind(Span.Kind.INTERNAL)
-        .setStartEpochNanos(0)
-        .setStatus(Status.ABORTED)
-        .setEndEpochNanos(0)
-        .setHasEnded(true)
-        .build()
+      val spanData = new SpanData() {
+        override def getTraceId: TraceId =
+          new TraceId(0, 0)
+
+        override def getSpanId: SpanId =
+          new SpanId(0)
+
+        override def getTraceFlags: TraceFlags =
+          TraceFlags.getDefault
+
+        override def getTraceState: TraceState =
+          TraceState.getDefault
+
+        override def getParentSpanId: SpanId =
+          SpanId.getInvalid
+
+        override def getResource: Resource =
+          Resource.getDefault
+
+        override def getInstrumentationLibraryInfo: InstrumentationLibraryInfo =
+          InstrumentationLibraryInfo.getEmpty
+
+        override def getName: String =
+          "name"
+
+        override def getKind: Span.Kind =
+          Span.Kind.INTERNAL
+
+        override def getStartEpochNanos: Long =
+          0
+
+        override def getAttributes: ReadableAttributes =
+          Attributes.empty()
+
+        override def getEvents: util.List[SpanData.Event] =
+          List.empty.asJava
+
+        override def getLinks: util.List[SpanData.Link] =
+          List.empty.asJava
+
+        override def getStatus: Status =
+          Status.ABORTED
+
+        override def getEndEpochNanos: Long =
+          0
+
+        override def getHasRemoteParent: Boolean =
+          false
+
+        override def getHasEnded: Boolean =
+          true
+
+        override def getTotalRecordedEvents: Int =
+          0
+
+        override def getTotalRecordedLinks: Int =
+          0
+
+        override def getTotalAttributeCount: Int =
+          0
+      }
+
       val spans = List(spanData).asJava
 
       val exporter = StreamSpanExporter(1)

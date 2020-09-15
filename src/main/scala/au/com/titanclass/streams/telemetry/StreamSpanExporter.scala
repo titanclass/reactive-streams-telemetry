@@ -21,8 +21,13 @@ import akka.NotUsed
 import akka.actor.ActorSystem
 import akka.stream.{ Attributes, OverflowStrategy }
 import akka.stream.scaladsl.{ BroadcastHub, Keep, Source }
+import io.opentelemetry.sdk.common.CompletableResultCode
 import io.opentelemetry.sdk.trace.`export`.SpanExporter
 import io.opentelemetry.sdk.trace.data.SpanData
+
+import scala.concurrent.Future
+import scala.jdk.CollectionConverters._
+import scala.util.{ Failure, Success }
 
 object StreamSpanExporter {
   def apply(bufferSize: Int)(implicit system: ActorSystem): StreamSpanExporter =
@@ -45,16 +50,24 @@ class StreamSpanExporter(bufferSize: Int)(implicit system: ActorSystem) extends 
   def source: Source[SpanData, NotUsed] =
     tracerSource
 
-  override def `export`(spans: util.Collection[SpanData]): SpanExporter.ResultCode = {
-    spans.forEach { metric =>
-      val _ = tracerQueue.offer(metric)
+  override def `export`(spans: util.Collection[SpanData]): CompletableResultCode = {
+    val resultCode = new CompletableResultCode()
+    import system.dispatcher
+    Future.sequence(spans.asScala.map(x => tracerQueue.offer(x)).toList).onComplete {
+      case Success(_) => resultCode.succeed()
+      case Failure(_) => resultCode.fail()
     }
-    SpanExporter.ResultCode.SUCCESS
+    resultCode
   }
 
-  override def flush(): SpanExporter.ResultCode =
-    SpanExporter.ResultCode.SUCCESS
+  override def flush(): CompletableResultCode =
+    CompletableResultCode.ofSuccess()
 
-  override def shutdown(): Unit =
+  override def shutdown(): CompletableResultCode = {
+    val resultCode = new CompletableResultCode()
     tracerQueue.complete()
+    import system.dispatcher
+    tracerQueue.watchCompletion().foreach(_ => resultCode.succeed())
+    resultCode
+  }
 }
