@@ -29,17 +29,28 @@ Serve up the latest telemetry gathered given an [Alpakka Unix Domain Socket](htt
 and the establishment of the `metrics` and `traces` sources from their respective exporters:
 
 ```scala
+import akka.NotUsed
+import akka.stream.alpakka.unixdomainsocket.scaladsl.UnixDomainSocket
+import akka.stream.scaladsl.{ Flow, Sink, Source }
+import au.com.titanclass.streams.telemetry.{ MetricProtobufMarshalling, SpanProtobufMarshalling }
+import io.opentelemetry.sdk.metrics.data.MetricData
+import io.opentelemetry.sdk.trace.data.SpanData
+import java.io.File
+
+val metrics: Source[MetricData, NotUsed] = ???
+val traces: Source[SpanData, NotUsed] = ???
+
 val source =
   metrics
     .map { metricData =>
       import MetricProtobufMarshalling._
-      ByteString(metricData.toProtobuf.build().toByteArray)
+      metricData.toProtobuf.build().toString
     }
     .merge(
       traces
         .map { spanData =>
           import SpanProtobufMarshalling._
-          ByteString(spanData.toProtobuf.build().toByteArray)
+          spanData.toProtobuf.build().toString
         }
     )
 
@@ -47,6 +58,8 @@ UnixDomainSocket()
   .bindAndHandle(Flow.fromSinkAndSourceCoupled(Sink.ignore, source),
                  new File("/var/run/mysocket.sock"))
 ```
+
+The above will just output the string representations of each element of telemetry.
 
 ## Download
 
