@@ -3,7 +3,7 @@
 [![maven-central-badge][]][maven-central] [![build-badge][]][build]
 
 [maven-central]:         https://search.maven.org/#search%7Cga%7C1%7Creactive-streams-telemetry
-[maven-central-badge]:   https://maven-badges.herokuapp.com/maven-central/au.com.titanclass/reactive-streams-telemetry_2.12/badge.svg
+[maven-central-badge]:   https://maven-badges.herokuapp.com/maven-central/au.com.titanclass/reactive-streams-telemetry_2.13/badge.svg
 [build]:                 https://circleci.com/gh/titanclass/reactive-streams-telemetry
 [build-badge]:           https://circleci.com/gh/titanclass/reactive-streams-telemetry.svg?style=shield
 
