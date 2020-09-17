@@ -18,8 +18,7 @@ package au.com.titanclass.streams.telemetry
 import java.util
 
 import akka.NotUsed
-import akka.actor.ActorSystem
-import akka.stream.{ Attributes, OverflowStrategy }
+import akka.stream.{ Attributes, Materializer, OverflowStrategy }
 import akka.stream.scaladsl.{ BroadcastHub, Keep, Source }
 import io.opentelemetry.sdk.common.CompletableResultCode
 import io.opentelemetry.sdk.metrics.`export`.MetricExporter
@@ -30,14 +29,14 @@ import scala.jdk.CollectionConverters._
 import scala.util.{ Failure, Success }
 
 object StreamMetricExporter {
-  def apply(bufferSize: Int)(implicit system: ActorSystem): StreamMetricExporter =
+  def apply(bufferSize: Int)(implicit mat: Materializer): StreamMetricExporter =
     new StreamMetricExporter(bufferSize)
 }
 
 /**
   * Provides a source of metrics
   */
-class StreamMetricExporter(bufferSize: Int)(implicit system: ActorSystem) extends MetricExporter {
+class StreamMetricExporter(bufferSize: Int)(implicit mat: Materializer) extends MetricExporter {
 
   private val (metricQueue, metricSource) = Source
     .queue[MetricData](bufferSize, OverflowStrategy.dropHead.withLogLevel(Attributes.LogLevels.Off))
@@ -52,7 +51,7 @@ class StreamMetricExporter(bufferSize: Int)(implicit system: ActorSystem) extend
 
   override def `export`(metrics: util.Collection[MetricData]): CompletableResultCode = {
     val resultCode = new CompletableResultCode()
-    import system.dispatcher
+    import mat.executionContext
     Future.sequence(metrics.asScala.map(x => metricQueue.offer(x)).toList).onComplete {
       case Success(_) => resultCode.succeed()
       case Failure(_) => resultCode.fail()

@@ -18,8 +18,7 @@ package au.com.titanclass.streams.telemetry
 import java.util
 
 import akka.NotUsed
-import akka.actor.ActorSystem
-import akka.stream.{ Attributes, OverflowStrategy }
+import akka.stream.{ Attributes, Materializer, OverflowStrategy }
 import akka.stream.scaladsl.{ BroadcastHub, Keep, Source }
 import io.opentelemetry.sdk.common.CompletableResultCode
 import io.opentelemetry.sdk.trace.`export`.SpanExporter
@@ -30,14 +29,14 @@ import scala.jdk.CollectionConverters._
 import scala.util.{ Failure, Success }
 
 object StreamSpanExporter {
-  def apply(bufferSize: Int)(implicit system: ActorSystem): StreamSpanExporter =
+  def apply(bufferSize: Int)(implicit mat: Materializer): StreamSpanExporter =
     new StreamSpanExporter(bufferSize)
 }
 
 /**
   * Provides a source of trace spans
   */
-class StreamSpanExporter(bufferSize: Int)(implicit system: ActorSystem) extends SpanExporter {
+class StreamSpanExporter(bufferSize: Int)(implicit mat: Materializer) extends SpanExporter {
 
   private val (tracerQueue, tracerSource) = Source
     .queue[SpanData](bufferSize, OverflowStrategy.dropHead.withLogLevel(Attributes.LogLevels.Off))
@@ -52,7 +51,7 @@ class StreamSpanExporter(bufferSize: Int)(implicit system: ActorSystem) extends 
 
   override def `export`(spans: util.Collection[SpanData]): CompletableResultCode = {
     val resultCode = new CompletableResultCode()
-    import system.dispatcher
+    import mat.executionContext
     Future.sequence(spans.asScala.map(x => tracerQueue.offer(x)).toList).onComplete {
       case Success(_) => resultCode.succeed()
       case Failure(_) => resultCode.fail()
@@ -66,7 +65,7 @@ class StreamSpanExporter(bufferSize: Int)(implicit system: ActorSystem) extends 
   override def shutdown(): CompletableResultCode = {
     val resultCode = new CompletableResultCode()
     tracerQueue.complete()
-    import system.dispatcher
+    import mat.executionContext
     tracerQueue.watchCompletion().foreach(_ => resultCode.succeed())
     resultCode
   }
